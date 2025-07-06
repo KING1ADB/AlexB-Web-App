@@ -214,8 +214,17 @@ export async function addFood(food: Omit<Food, "id">): Promise<string> {
   try {
     const timestamp = Date.now()
     const foodsRef = collection(db, "foods")
+    
+    // Remove undefined values
+    const cleanedFood = Object.entries(food).reduce((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as Record<string, any>);
+    
     const docRef = await addDoc(foodsRef, {
-      ...food,
+      ...cleanedFood,
       createdAt: timestamp,
       updatedAt: timestamp,
     })
@@ -264,3 +273,4 @@ export async function toggleFoodAvailability(id: string, available: boolean): Pr
     throw error
   }
 }
+
